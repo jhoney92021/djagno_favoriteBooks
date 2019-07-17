@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hey, books are still a thing!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'BOOK_APP/css/style.css' %}"> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <table class="table"><!--USER TABLE-->
+            <h1>Hi {{liveUser.username}}!</h1>
+            <thead>
+                <th>Username</th>
+                <th>Books Added</th>
+                <th>Author Added</th>
+                <th>Action</th>
+            </thead>
+            {% for user in allUsers %}
+                <tr class="readableTableData">
+                    <td>{{user.username}}</td>
+                    <td>{% for contribution in user.added_book.all %}{{contribution.title}}<br>{% endfor %}</td><br><!--added_books-->
+                    <td>{% for contribution in user.added_author.all %}{{contribution.fname}} {{contribution.lname}}<br>{% endfor %}</td><!--added_authors-->
+                    <td><a href="/user{{user.id}}">View</a></td>
+                </tr>
+            {% endfor %}    
+        </table><!--USER TABLE-->
+        <a href="/logout">Logout</a>
+
+        <table class="table"><!--BOOK TABLE-->
+            <h1>Books</h1>
+            <thead>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Contributor</th>
+            <th>Fans</th>
+            <th>Action</th>
+            </thead>
+
+            {% for book in allBooks %}
+                
+                <tr class="readableTableData">
+                    <td>{{book.id}}</td><td>{{book.title}}</td><!--ID & TITLE-->
+                    <td>{{book.contributor.username}}</td><!--CONTRIBUTOR-->
+                    <td>{% for fan in book.fan.all %}{{fan.username}}<br>{% endfor %}</td><!--FANS-->
+                    <td><!--ACTIONS-->
+                        {% if liveUser.id != book.contributor.id %}
+                        <a href="/books/{{book.id}}">View</a> <br><!--VIEW-->
+                        {% endif %}
+                        {% if liveUser.id == book.contributor.id %}
+                        <a href="/books/{{book.id}}">Edit</a><br><!--EDIT-->  
+                        {% endif %}
+                        {% if liveUser not in book.fan.all %}
+                        <a href="/books/favorite/{{book.id}}" style="color: green">Favorite</a><br> <!--FAVORITE BUTTON-->
+                        {% endif %}
+                        {% if liveUser in book.fan.all %}
+                        <a href="/books/unfavorite/{{book.id}}" style="color: purple">UnFavorite</a><br> <!--UNFAVORITE BUTTON-->
+                        {% endif %}
+                        {% if liveUser.id == book.contributor.id %}
+                        <a href="/books/delete/{{book.id}}" style="color: red">Delete</a><br><!--DELETE-->
+                        {% endif %}
+                    </td><!--ACTIONS-->
+                </tr>
+                
+            {% endfor %}
+        </table><!--BOOK TABLE END-->
+
+        <table class="table"><!--AUTHOR TABLE-->
+            <h1>Authors</h1>
+            <thead>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Contributor</th>
+                <th>Fans</th>
+                <th>Action</th>
+            </thead>
+
+            {% for author in allAuthors %}
+            <tr class="readableTableData">
+                <td>{{author.id}}</td><td>{{author.fname}} {{author.lname}}</td><!--ID AND NAME-->
+                <td>{{author.contributor.username}}</td><!--CONTRIBUTOR-->
+                <td>{% for fan in author.fan.all %}{{fan.username}}<br>{% endfor %}</td><!--FANS-->
+                <td><!--ACTIONS-->
+                    {% if liveUser.id != author.contributor.id %}
+                    <a href="/books/author/{{author.id}}">View</a><br> <!--VIEW-->
+                    {% endif %}
+                    {% if liveUser.id == author.contributor.id %}
+                    <a href="/books/author/{{author.id}}">Edit</a><br><!--EDIT-->
+                    {% endif %}
+                    {% if liveUser not in author.fan.all %}
+                    <a href="/books/author/favorite/{{author.id}}" style="color: green">Favorite</a><br><!--FAVORITE-->
+                    {% endif %}
+                    {% if liveUser in author.fan.all %}
+                    <a href="/books/author/unfavorite/{{author.id}}" style="color: purple">UnFavorite</a><br><!--UNFAVORITE-->
+                    {% endif %}
+                    {% if liveUser.id == author.contributor.id %}
+                    <a href="/books/author/delete/{{author.id}}" style="color: red">Delete</a><br><!--DELETE-->
+                    {% endif %}
+                </td><!--ACTIONS-->
+            </tr>
+            {% endfor %}
+        </table><!--AUTHOR TABLE END-->
+
+        <table class="table"><!--CREATION TABLE END-->
+            <tr>
+                <td>
+                    <form action="/books/addBook" class="table" method="POST"><!--BOOK FORM-->
+                            {% csrf_token %}
+                        <h2>Add a Book</h2>
+                        <b>Title:</b> <input type="text" name="title" placeholder="Give a Title"><br>
+                        <b>Description:</b> <br> <textarea name="Description" id="" cols="30" rows="10" placeholder="Give a Description"></textarea>
+                        <input type="submit" >
+                    </form><!--BOOK FORM END-->
+                </td>
+                <td>
+                    <form action="/books/addAuthor" class="table" method="POST"><!--AUTHOR FORM-->
+                            {% csrf_token %}
+                        <h2>Add an Author</h2>
+                        First Name: <input type="text" name="fname" placeholder="Give a First Name"><br><br>
+                        Last Name: <input type="text" name="lname" placeholder="Give a Last Name"><br>
+                        Notes: <br> <textarea name="notes" id="" cols="30" rows="10" placeholder="Give a Note"></textarea>
+                        <input type="submit">
+                    </form><!--AUTHOR FORM END-->
+                </td>
+            </tr>
+        </table><!--CREATION TABLE END-->
+
+        <a href="/">LOGIN PAGE</a>
+    </div><!--CONTAINER-->
+</body>
+</html>

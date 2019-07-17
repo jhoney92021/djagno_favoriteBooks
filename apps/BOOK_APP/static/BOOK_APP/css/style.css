@@ -1,0 +1,13 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.readableTableData{
+    color: black;
+    font-weight: 600;
+}
+
+.container{
+    background-color: lightgray;
+}

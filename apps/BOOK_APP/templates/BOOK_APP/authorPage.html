@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{thisAuthor.fname}} {{thisAuthor.lname}}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'BOOK_APP/css/style.css' %}"> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+            <h1>{{thisAuthor.fname}} {{thisAuthor.lname}}</h1>
+            {% if liveUser.id == thisAuthor.contributor.id %}<!--CONTRIBUTOR EDIT-->
+                <form action="edit/{{thisAuthor.id}}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="notes" >
+                    <input type="text" name="fname" placeholder="Edit First">
+                    <input type="text" name="lname" placeholder="Edit Last">
+                    <input type="submit" value="SUBMIT">
+                </form>
+            {% endif %}<!--CONTRIBUTOR EDIT-->
+            <h4>{{thisAuthor.id}}</h4>
+            <h4>Contributed: {{thisAuthor.contributor.username}}</h4><!--CONTRIBUTOR-->
+            Description: <p class="readableTableData">{{thisAuthor.notes}}</p>
+            {% if liveUser.id == thisAuthor.contributor.id %}<!--CONTRIBUTOR EDIT-->
+                <form action="edit/{{thisAuthor.id}}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="fname" >
+                    <input type="hidden" name="lname" >
+                    <input type="text" name="notes" placeholder='Edit Description'>
+                    <input type="submit" value="SUBMIT">
+                </form>
+            {% endif %}<!--CONTRIBUTOR EDIT-->
+
+            Books:<!--BOOKS THE AUTHOR WROTE-->
+                {% for book in thisAuthor.books.all %}
+                    <ol class="readableTableData">{{book.title}}</ol>
+                {% endfor %}<!--BOOKS THE AUTHOR WROTE END-->
+            <br>
+            <br>
+            Fans:<!--FANS OF THE BOOK-->
+                {% for fan in thisAuthor.fan.all %}
+                    <ol class="readableTableData">{{fan.username}}</ol>
+                {% endfor %}<!--FANS OF THE BOOK END-->
+
+            <form action="addBook2Auth/{{thisAuthor.id}}" method="POST" > <!--FORM FOR BOOK ADDITION-->
+               {% csrf_token %}
+               <select name="spoons">
+                   {% for book in allBooks %}<!--BOOKS THE AUTHOR COULD HAVE WRITTEN-->
+                        {% if book not in thisAuthor.books.all %}
+                            <option value="{{book.id}}">{{book.title}}</option>
+                        {% endif %}
+                   {% endfor %}<!--COULD HAVE WRITTEN END-->
+               </select>
+               <input type="submit" value="SUBMIT">
+           </form> <!--FORM FOR BOOK ADDITION END-->
+    </div><!--CONTAINER-->
+    <a href="/books">MAIN PAGE</a>
+</body>
+</html>

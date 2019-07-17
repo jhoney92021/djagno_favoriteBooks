@@ -1,0 +1,22 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+input::placeholder{
+    color: red;
+    font-weight: 600;
+}
+
+.errors{
+    height: auto; width: auto;
+    display: inline-block;
+    background-color: red;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.container{
+    background-color: lightgray;
+}
